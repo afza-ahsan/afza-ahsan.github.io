@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Afza Ahsan Portfolio</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600&display=swap">
+<style>
+/* Layout: slim top bar with three tabs (About, Projects, Contact). One column, 1040px.
+   Projects are a card grid that opens into a detail view. One accent (maple rust), quiet neutrals,
+   a single drawn signal trace as the page's one flourish. */
+:root{
+  --bg:#f6f3ed;          /* overcast sky */
+  --surface:#fffdf9;
+  --fg:#1c1713;          /* coat */
+  --muted:#625648;       /* fence wood */
+  --line:#e2d9cb;
+  --accent:#b8431a;      /* maple rust */
+  --accent-soft:#f8e7c6; /* pale scarf */
+  --frame:#e3a50a;       /* scarf mustard */
+  --leaf:#4f6a1c;        /* pasture green */
+  --leaf-soft:#e6edd0;
+  --font-display:'Familjen Grotesk','Helvetica Neue',Arial,sans-serif;
+  --font-body:'Manrope','Helvetica Neue',Arial,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+
+.detail h3{font-size:22px;letter-spacing:-.01em;margin:44px 0 10px}
+.detail .prose{max-width:68ch;color:var(--muted);font-size:16px}
+.detail .prose+.prose{margin-top:12px}
+.detail .prose strong,.detail .prose code{color:var(--fg)}
+.detail .prose code{font:400 14px var(--font-mono)}
+.tbl.text th,.tbl.text td{text-align:left}
+.tbl.text td:last-child,.tbl.text th:last-child{text-align:right}
+.tbl.text.wide td:last-child,.tbl.text.wide th:last-child{text-align:left}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:baseline}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16110d;--surface:#201913;--fg:#f4ede3;--muted:#b9aa98;--line:#3b2f25;
+    --accent:#ff9150;--accent-soft:#3a2a17;--frame:#9a6c0f;--leaf:#b5d46a;--leaf-soft:#2a3114;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16110d;--surface:#201913;--fg:#f4ede3;--muted:#b9aa98;--line:#3b2f25;
+  --accent:#ff9150;--accent-soft:#3a2a17;--frame:#9a6c0f;--leaf:#b5d46a;--leaf-soft:#2a3114;color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--bg);color:var(--fg);font:16px/1.65 var(--font-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0;
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+.wrap{max-width:1040px;margin:0 auto}
+a{color:var(--accent);text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+h1,h2,h3{font-family:var(--font-display);margin:0;line-height:1.08;text-wrap:balance}
+p{margin:0}
+.mono{font-family:var(--font-mono)}
+.label{font:500 11px/1.4 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0;flex-wrap:wrap}
+.brand{font:700 18px var(--font-display);color:var(--fg);text-decoration:none;letter-spacing:-.01em}
+.tabs{display:flex;gap:4px}
+.tabs a{font:500 14px var(--font-body);color:var(--muted);text-decoration:none;padding:7px 14px;border-radius:999px}
+.tabs a:hover{color:var(--fg)}
+.tabs a[aria-current="page"]{background:var(--fg);color:var(--bg)}
+
+.view{display:none;padding:40px 0 80px}
+.view.on{display:block}
+
+/* about */
+.about{display:block;max-width:980px}
+.about::after{content:"";display:block;clear:both}
+.about h1{font-size:clamp(40px,7vw,76px);letter-spacing:-.03em;font-weight:700}
+.about .sub{margin-top:16px;font:500 clamp(18px,2.4vw,22px)/1.4 var(--font-display);max-width:40ch}
+.trace{display:block;width:100%;max-width:520px;height:52px;margin:26px 0 22px;overflow:visible}
+.trace path{fill:none;stroke:var(--accent);stroke-width:2.2;stroke-linecap:round;stroke-dasharray:1200;stroke-dashoffset:0;animation:draw 1.6s ease-out both}
+@keyframes draw{from{stroke-dashoffset:1200}to{stroke-dashoffset:0}}
+.bio p{max-width:none;color:var(--muted);font-size:17px}
+.bio p+p{margin-top:14px}
+.bio strong{color:var(--fg);font-weight:600}
+.photo{float:right;width:340px;margin:0 14px 30px 44px}
+.photo img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;object-position:54% 60%;border-radius:6px;border:1px solid var(--line);box-shadow:12px 12px 0 var(--frame)}
+
+.rows{margin-top:56px;border-top:1px solid var(--fg)}
+.row{display:grid;grid-template-columns:180px minmax(0,1fr);gap:8px 32px;padding:22px 0;border-bottom:1px solid var(--line)}
+.row>.label{padding-top:4px}
+.item+.item{margin-top:18px}
+.item b{font:700 17px var(--font-display);display:block}
+.item .meta{font:400 13px var(--font-mono);color:var(--muted);margin-top:2px}
+.item p{margin-top:4px;color:var(--muted);font-size:15px;max-width:62ch}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{font:400 13px var(--font-mono);padding:4px 10px;border:1px solid var(--line);background:var(--surface);border-radius:999px}
+.chip-group+.chip-group{margin-top:14px}
+.chip-group .label{margin-bottom:6px;display:block}
+
+/* projects */
+.page-head{margin-bottom:28px}
+.page-head h2{font-size:clamp(30px,5vw,48px);letter-spacing:-.025em}
+.page-head p{margin-top:10px;color:var(--muted);max-width:56ch}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.card{display:flex;flex-direction:column;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;color:var(--fg);text-decoration:none;overflow:hidden;transition:border-color .15s,transform .15s}
+.card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.card .thumb{aspect-ratio:4/3;background:var(--accent-soft);display:grid;place-items:center;overflow:hidden;border-bottom:1px solid var(--line)}
+.card .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.card .thumb svg{width:100%;height:100%;display:block}
+.card .body{padding:16px 18px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.card h3{font-size:20px;letter-spacing:-.01em}
+.card p{font-size:14px;color:var(--muted);line-height:1.55}
+.card .meta{margin-top:auto;padding-top:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tag.wip{background:var(--leaf-soft);color:var(--leaf)}
+.tag{font:500 11px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;padding:5px 8px;background:var(--accent-soft);color:var(--accent);border-radius:3px}
+.card.feature{grid-column:1/-1;flex-direction:row}
+.card.feature .thumb{flex:0 0 52%;aspect-ratio:auto;min-height:300px;border-bottom:0;border-right:1px solid var(--line)}
+.card.feature .body{padding:28px;justify-content:center}
+.card.feature h3{font-size:clamp(26px,3.4vw,36px)}
+.card.feature p{font-size:16px}
+.big{font:700 clamp(40px,6vw,60px)/1 var(--font-display);color:var(--accent);letter-spacing:-.03em;text-align:center}
+.big small{display:block;margin-top:8px;font:400 12px/1.4 var(--font-mono);color:var(--muted);letter-spacing:0}
+
+/* project detail */
+.back{display:inline-flex;gap:6px;font:500 13px var(--font-mono);text-decoration:none;color:var(--muted);margin-bottom:22px}
+.back:hover{color:var(--accent)}
+.detail h2{font-size:clamp(30px,5vw,52px);letter-spacing:-.025em;max-width:20ch}
+.detail .tags{display:flex;gap:8px;margin-top:14px}
+.wwr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;margin:34px 0 0;padding-top:24px;border-top:1px solid var(--fg)}
+.wwr>div{min-width:0}
+.wwr dt{font:500 11px var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.wwr dd{margin:0;font-size:15px}
+.wwr p+p{margin-top:8px}
+.wwr ul{margin:0;padding-left:18px}
+.wwr li{margin:0 0 8px}
+.gallery{display:grid;gap:14px;margin-top:34px}
+.gallery.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.gallery.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.gallery.g1{grid-template-columns:minmax(0,640px)}
+/* Solar imager: mixed-shape images in one row, all the same height */
+.gallery.imager{display:flex;gap:14px;align-items:flex-start}
+.gallery.imager figure{flex:var(--ar) 1 0;min-width:0}
+figure{margin:0;min-width:0}
+figure img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+figcaption{margin-top:6px;font:400 12px/1.4 var(--font-mono);color:var(--muted)}
+.plot{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 10px 6px;margin-top:34px;max-width:720px}
+.plot svg{display:block;width:100%;height:auto}
+.plot figcaption{padding:0 8px 8px}
+.tbl{overflow-x:auto;margin-top:12px}
+table{border-collapse:collapse;width:100%;font:400 14px var(--font-mono);font-variant-numeric:tabular-nums}
+th,td{text-align:right;padding:7px 10px;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:500;color:var(--muted);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+
+/* contact */
+.contact{max-width:640px}
+.contact h2{font-size:clamp(34px,6vw,60px);letter-spacing:-.03em}
+.contact .lede{margin-top:16px;color:var(--muted);font-size:17px;max-width:48ch}
+.contact .mail{margin-top:30px;font:500 clamp(16px,3.4vw,22px) var(--font-mono);word-break:break-all;padding:18px 20px;border:1px solid var(--fg);background:var(--surface);border-radius:6px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.btn{display:inline-flex;padding:10px 18px;border:1px solid var(--fg);color:var(--fg);text-decoration:none;font:500 14px var(--font-body);background:transparent;cursor:pointer;border-radius:999px}
+.btn.primary{background:var(--fg);color:var(--bg)}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary:hover{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.interests{margin-top:44px}
+footer{padding:0 0 28px;font:400 12px var(--font-mono);color:var(--muted)}
+footer .wrap{border-top:1px solid var(--line);padding-top:18px}
+
+@media (max-width:860px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .card.feature{flex-direction:column}
+  .card.feature .thumb{flex:none;min-height:0;aspect-ratio:4/3;border-right:0;border-bottom:1px solid var(--line)}
+  .photo{float:none;width:min(340px,100%);margin:0 0 34px}
+  .row{grid-template-columns:1fr;gap:6px}
+  .wwr{grid-template-columns:1fr;gap:22px}
+  .gallery.g3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .gallery.imager{flex-direction:column}
+  .gallery.imager figure{flex:none;width:100%}
+}
+@media (max-width:560px){
+  .grid{grid-template-columns:1fr}
+  .gallery.g2,.gallery.g3{grid-template-columns:1fr}
+  .view{padding-top:24px}
+  .tabs a{padding:7px 11px}
+}
+@media (prefers-reduced-motion:reduce){.trace path{animation:none}.card{transition:none}}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#about">Afza Ahsan</a>
+    <nav class="tabs" aria-label="Sections">
+      <a href="#about" data-tab="about">About</a>
+      <a href="#projects" data-tab="projects">Projects</a>
+      <a href="#contact" data-tab="contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ABOUT -->
+<section class="view" id="view-about">
+  <div class="about">
+    <figure class="photo">
+      <img src="port.jpg" alt="Afza Ahsan smiling in front of a wooden fence, with alpacas and autumn trees behind her">
+    </figure>
+    <div class="bio">
+      <h1>Hello!</h1>
+      <p class="sub">S.B. in Electrical and Computer Engineering, Harvard '28</p>
+      <svg class="trace" viewBox="0 0 520 52" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 26.0 L4 32.6 L8 38.5 L12 43.0 L16 45.5 L20 45.9 L24 43.9 L28 40.0 L32 34.4 L36 27.9 L40 21.2 L44 15.0 L48 10.1 L52 7.0 L56 6.0 L60 7.3 L64 10.7 L68 15.9 L72 22.2 L76 28.9 L80 35.3 L84 40.6 L88 44.3 L92 45.9 L96 45.3 L100 42.5 L104 37.8 L108 31.7 L112 25.0 L116 18.5 L120 12.7 L124 8.5 L128 6.3 L132 6.3 L136 8.5 L140 12.7 L144 18.5 L148 25.0 L152 31.7 L156 37.8 L160 42.5 L164 45.3 L168 45.9 L172 44.3 L176 40.6 L180 35.3 L184 28.9 L188 22.2 L192 15.9 L196 10.7 L200 7.3 L204 6.0 L208 7.0 L212 10.1 L216 15.0 L220 21.2 L224 27.9 L228 34.4 L232 40.0 L236 43.9 L240 45.9 L244 45.5 L248 43.0 L252 38.5 L256 32.6 L260 26.0 L264 19.4 L268 13.5 L272 9.0 L276 6.5 L280 6.1 L284 8.1 L288 12.0 L292 17.6 L296 24.1 L300 30.8 L304 37.0 L308 41.9 L312 45.0 L316 46.0 L320 44.7 L324 41.3 L328 36.1 L332 29.8 L336 23.1 L340 16.7 L344 11.4 L348 7.7 L352 6.1 L356 6.7 L360 9.5 L364 14.2 L368 20.3 L372 27.0 L376 33.5 L380 39.3 L384 43.5 L388 45.7 L392 45.7 L396 43.5 L400 39.3 L404 33.5 L408 27.0 L412 20.3 L416 14.2 L420 9.5 L424 6.7 L428 6.1 L432 7.7 L436 11.4 L440 16.7 L444 23.1 L448 29.8 L452 36.1 L456 41.3 L460 44.7 L464 46.0 L468 45.0 L472 41.9 L476 37.0 L480 30.8 L484 24.1 L488 17.6 L492 12.0 L496 8.1 L500 6.1 L504 6.5 L508 9.0 L512 13.5 L516 19.4 L520 26.0"/>
+      </svg>
+      <p>I am interested in circuit design, power electronics and computer architecture. My most recent project was developing a 6.78&nbsp;MHz capacitive wireless charger for a humanoid robot, where I simulated the coupler design, designed and soldered GaN inverter boards, and measured 73% end-to-end efficiency.</p>
+      <p>I'm currently working on a solar imager for the Astronomy lab at Harvard and plan to start a new research project at MIT that investigates flexible-plate capacitive wireless power transfer. My other projects, which have taught me a great deal about designing and debugging circuits and coding hardware, can be found under the Projects tab.</p>
+    </div>
+  </div>
+
+  <div class="rows">
+    <div class="row">
+      <div class="label">Experience</div>
+      <div>
+        <div class="item"><b>Research Intern, High Frequency Power Electronics Group</b><div class="meta">Cornell University · Summer 2026</div><p>Designed and built a 6.78&nbsp;MHz capacitive wireless power system for a humanoid robot.</p></div>
+        <div class="item"><b>WPT Research Intern</b><div class="meta">Massachusetts Institute of Technology</div><p>Capacitive wireless power transfer with flexible capacitor plates.</p></div>
+        <div class="item"><b>Infrared Camera for Solar Imaging</b><div class="meta">Center for Astrophysics | Harvard &amp; Smithsonian</div></div>
+        <div class="item"><b>Course Assistant and Teaching Fellow</b><div class="meta">Harvard · Physics 15A and ES50 · 2025 – 2026</div><p>Designed homework, labs, and exams on circuits and mechanics; held weekly office hours.</p></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="label">Education</div>
+      <div>
+        <div class="item"><b>Harvard College</b><div class="meta">S.B. Electrical Engineering · 2024 – 2028 · GPA 3.85</div><p>Electromagnetism, Circuits, Devices and Transduction, Computing Hardware, Signals and Communications, Systems and Control, Microfabrication, Computer Aided Machine Design.</p></div>
+        <div class="item"><b>Honors</b><p>Top in Pakistan at the International Young Physicists' Tournament. Silver Medalist, Academic Marathon in Physics.</p></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="label">Leadership</div>
+      <div>
+        <div class="item"><b>Co-President, Student Astronomers at Harvard-Radcliffe</b><div class="meta">2026 – present</div><p>Leading construction of a new observatory at the Harvard Forest.</p></div>
+        <div class="item"><b>Executive Board, Harvard Women in Physics</b><div class="meta">2025 – 2026</div><p>Organized panels and workshops and mentored 30+ students.</p></div>
+        <div class="item"><b>Organizer, Harvard Pakistan Trek</b><div class="meta">2025 – present</div><p>Led a week-long immersion program for 30 students and raised $50,000+.</p></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="label">Skills</div>
+      <div>
+        <div class="chip-group"><span class="label">Languages</span><div class="chips"><span>SystemVerilog</span><span>Python</span><span>C</span><span>JavaScript</span><span>HTML/CSS</span></div></div>
+        <div class="chip-group"><span class="label">Design and analysis</span><div class="chips"><span>Altium Designer</span><span>LTspice</span><span>Ansys</span><span>MATLAB</span><span>Fusion 360</span><span>Vivado</span></div></div>
+        <div class="chip-group"><span class="label">Lab</span><div class="chips"><span>Oscilloscopes</span><span>Soldering</span><span>Debugging</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="view" id="view-projects">
+  <div class="page-head">
+    <h2>Projects</h2>
+  </div>
+  <div class="grid">
+    <a class="card feature" href="#p-wpt">
+      <div class="thumb"><img src="img/wpt-coupler.jpg" alt="Capacitive coupler with two air-core inductors" loading="lazy"></div>
+      <div class="body">
+        <span class="tag">Cornell · 2026</span>
+        <h3>Wireless Capacitive Charger for Humanoid Robots</h3>
+        <p>A 6.78&nbsp;MHz capacitive power link that charges a robot through the soles of its feet. Coupler simulated in Ansys, GaN inverter and rectifier boards designed in Altium, 73% measured efficiency.</p>
+      </div>
+    </a>
+    <a class="card" href="#p-solar">
+      <div class="thumb"><img src="img/INSI.PNG" alt="Solar Imager" loading="lazy"></div>
+      <div class="body"><h3>Solar Imager</h3><p>Weatherproof mechanical structure for an outdoor imager: motorized cover, base legs, pier mount.</p><div class="meta"><span class="tag wip">In progress</span></div></div>
+    </a>
+    <a class="card" href="#p-audio">
+      <div class="thumb"><img src="img/opcover.jpeg" alt="Op-amp audio circuit on a breadboard with a speaker and oscilloscope probes" loading="lazy"></div>
+      <div class="body"><h3>Op-Amp Audio Signal Chain</h3><p>TL081 input stage, two-stage passive low-pass filter, and speaker driver, simulated and measured.</p><div class="meta"></div></div>
+    </a>
+    <a class="card" href="#p-fpga">
+      <div class="thumb"><img src="img/fsm-gui.png" alt="Traffic light simulation GUI showing intersection lights, pedestrian signals, timer and car inputs" loading="lazy"></div>
+      <div class="body"><h3>FPGA Traffic Light Controller</h3><p>A 10-state SystemVerilog FSM with pedestrian signals and car sensors, verified with a self-checking testbench and run on an Opal Kelly FPGA board.</p><div class="meta"><span class="tag">CS 1410</span></div></div>
+    </a>
+    <a class="card" href="#p-plant">
+      <div class="thumb"><img src="img/plant-build.jpg" alt="Two breadboards for the plant watering system" loading="lazy"></div>
+      <div class="body"><h3>Wireless Plant Watering</h3><p>Root-level moisture sensing that signals a watering node over infrared.</p></div>
+    </a>
+    <a class="card" href="#p-theremin">
+      <div class="thumb"><img src="img/theremin.jpg" alt="Optical theremin breadboards with oscilloscope probes" loading="lazy"></div>
+      <div class="body"><h3>Optical Theremin</h3><p>Pitch and volume follow a hand's distance from a photocell.</p></div>
+    </a>
+    <a class="card" href="#p-robot">
+      <div class="thumb"><img src="img/robot.jpg" alt="Navigating robot with ultrasonic sensors" loading="lazy"></div>
+      <div class="body"><h3>Navigating Robot</h3><p>Ultrasonic obstacle avoidance with PID-tuned wheel speed.</p></div>
+    </a>
+  </div>
+</section>
+
+<!-- PROJECT DETAILS -->
+<article class="view detail" id="view-p-wpt">
+  <a class="back" href="#projects">&larr; All projects</a>
+  <h2>Wireless Capacitive Charger for Humanoid Robots</h2>
+  <div class="tags"><span class="tag">Cornell · 2026</span><span class="tag">6.78 MHz</span><span class="tag">73% efficiency</span></div>
+  <dl class="wwr">
+    <div><dt>What</dt><dd>
+      <p>A low-cost, lightweight capacitive wireless power system that charges a humanoid robot through the soles of its feet, as an alternative to bulky inductive charging.</p>
+      <p>The system has a coupler, a matching network, and inverter and rectifier boards designed and soldered by hand.</p>
+    </dd></div>
+    <div><dt>How</dt><dd><ul>
+      <li>Simulated the coupler geometry in Ansys so it fits inside the robot's shoe.</li>
+      <li>Calculated the matching inductance from the coupler capacitance, then simulated and built air-core inductors.</li>
+      <li>Designed inverter and rectifier PCBs with gate drivers and switches, driven by PWM from a programmed FPGA.</li>
+    </ul></dd></div>
+    <div><dt>Result</dt><dd><ul>
+      <li>Final coupler capacitance of 236.53&nbsp;pF.</li>
+      <li>Verified both boards by probing output at the switching nodes.</li>
+      <li>Assembled and powered the full system to reach 73% efficiency.</li>
+    </ul></dd></div>
+  </dl>
+  <div class="gallery g2">
+    <figure><img src="img/wpt-coupler.jpg" alt="Coupler with Kapton-wrapped plates and two air-core inductors" loading="lazy"><figcaption>Coupler with matching network</figcaption></figure>
+    <figure><img src="img/wpt-stack.jpg" alt="Coupler layer stack: aluminum, PTFE, HDPE, and a thin air layer" loading="lazy"><figcaption>Coupler stack: Al, PTFE, HDPE, thin air layer</figcaption></figure>
+  </div>
+  <div class="gallery g3">
+    <figure><img src="img/wpt-pcb-layout.jpg" alt="Inverter board layout in Altium" loading="lazy"><figcaption>Inverter board layout in Altium</figcaption></figure>
+    <figure><img src="img/wpt-boards.jpg" alt="Assembled inverter and rectifier boards" loading="lazy"><figcaption>Inverter and rectifier boards</figcaption></figure>
+    <figure><img src="img/wpt-test.jpg" alt="Full test setup with oscilloscope probes" loading="lazy"><figcaption>Testing setup</figcaption></figure>
+  </div>
+</article>
+
+<article class="view detail" id="view-p-solar">
+  <a class="back" href="#projects">&larr; All projects</a>
+  <h2>Solar Imager</h2>
+  <div class="tags"><span class="tag wip">In progress</span></div>
+  <dl class="wwr">
+    <div><dt>What</dt><dd><p>The mechanical structure for an outdoor solar imager: a motorized roll-down weather cover and a mounting base on a concrete pillar.</p></dd></div>
+    <div><dt>How</dt><dd><ul>
+      <li>CAD assembly of motor rails, base support legs, and spine bars (Thorlabs ZE75L40), with spacer blocks sized for wind-pressure torque on the cover.</li>
+      <li>Designing the anchoring of the legs to the pillar with 3/8"-16 bolts to withstand winter gusts and rain.</li>
+      <li>Running simulations on Solidworks to ensure structural integrity against Boston weather.</li>
+      <li>Designing a 0.45&nbsp;m pier mount that lifts a tracking mount off the base plate.</li>
+    </ul></dd></div>
+    <div><dt>Status</dt><dd><p>Major components machined (mostly milling and drilling) and we are now waiting on full assembly and permanent installation.</p></dd></div>
+  </dl>
+  <div class="gallery imager">
+    <figure style="--ar:0.58"><img src="img/si.png" alt="CAD model of the imager with its roll-down cover closed" loading="lazy"><figcaption>CAD model of imager</figcaption></figure>
+    <figure style="--ar:0.83"><img src="img/insi.png" alt="CAD assembly from the inside, showing the telescope mount and rails" loading="lazy"><figcaption>CAD assembly from the inside</figcaption></figure>
+    <figure style="--ar:1.34"><img src="img/realsi.png" alt="Imager parts being assembled on a table" loading="lazy"><figcaption>Imager assembly</figcaption></figure>
+  </div>
+</article>
+
+<article class="view detail" id="view-p-audio">
+  <a class="back" href="#projects">&larr; All projects</a>
+  <h2>Op-Amp Audio Signal Chain with Passive Filtering</h2>
+  <dl class="wwr">
+    <div><dt>What</dt><dd><ul>
+      <li>A three-stage audio pipeline on a breadboard.</li>
+      <li>First stage taked the input from computer.</li>
+      <li>Second stage passes audio signals through low pass filter to isolate the bass in the song</li>
+      <li>Third stage passes the signal through an opamp and outputs it through a speaker</li>
+    </ul></div>
+    <div><dt>How</dt><dd><ul>
+      <li>TL081 non-inverting input stage, AC-coupled, with input impedance above 10&nbsp;kΩ and a potentiometer that sets gain up to 5.5 as the volume control.</li>
+      <li>Two-stage passive RC low-pass (1.8&nbsp;kΩ with 330&nbsp;nF, then 18&nbsp;kΩ with 33&nbsp;nF), both stages near 270&nbsp;Hz for −40&nbsp;dB per decade. The second resistor is ten times the first so stage two barely loads stage one.</li>
+      <li>Simulated the response from 10&nbsp;Hz to 100&nbsp;kHz in LTspice, then built each stage on a breadboard and measured it with an oscilloscope.</li>
+    </ul></dd></div>
+    <div><dt>Result</dt><dd>
+      <p>The simulated second stage falls to about −100&nbsp;dB at 100&nbsp;kHz, and the bench output follows the same trend. With a sine input of about 196&nbsp;mV peak to peak:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Freq</th><th>In (mV)</th><th>Out (mV)</th></tr></thead>
+        <tbody><tr><td>50 Hz</td><td>196</td><td>164</td></tr><tr><td>100 Hz</td><td>196</td><td>116</td></tr><tr><td>500 Hz</td><td>192</td><td>40</td></tr></tbody>
+      </table></div>
+    </dd></div>
+  </dl>
+  <div class="gallery g2">
+    <figure><img src="img/ltspice.jpeg" alt="LTspice schematic of the two-stage RC low-pass filter" loading="lazy"><figcaption>LTspice model</figcaption></figure>
+    <figure><img src="img/ltspicesim.jpeg" alt="LTspice Bode plot of stage 1 and stage 2 magnitude and phase from 10 Hz to 100 kHz" loading="lazy"><figcaption>Simulated gain and phase, stage 1 (green) and stage 2 (blue)</figcaption></figure>
+  </div>
+  <div class="gallery g2">
+    <figure><img src="img/audio-scope-gain.jpeg" alt="Oscilloscope showing input stage input in yellow and amplified output in cyan" loading="lazy"><figcaption>Oscilloscope: input (CH1) and amplified output (CH2)</figcaption></figure>
+    <figure><img src="img/audio-scope-out.jpeg" alt="Oscilloscope capture of audio signals through the chain" loading="lazy"><figcaption>Oscilloscope: signal through the chain</figcaption></figure>
+  </div>
+  <div class="gallery" style="grid-template-columns:minmax(0,1fr)">
+    <figure><img src="img/opin.jpeg" alt="Input stage and potentiometer on one breadboard, filter and speaker driver on the other" loading="lazy"><figcaption>Input stage with volume potentiometer (left) and filter and driver (right)</figcaption></figure>
+  </div>
+</article>
+
+<article class="view detail" id="view-p-fpga">
+  <a class="back" href="#projects">&larr; All projects</a>
+  <h2>Programming Hardware: FPGA Traffic Light Controller</h2>
+  <div class="tags"><span class="tag">CS 1410 · 2026</span><span class="tag">SystemVerilog</span><span class="tag">Vivado</span></div>
+  <dl class="wwr">
+    <div><dt>What</dt><dd>
+      <p>A traffic light controller for an intersection with 2 traffic lights (east-west and north-south), written in SystemVerilog and run on an FPGA board.</p>
+    </dd></div>
+    <div><dt>How</dt><dd><ul>
+      <li>A 10-state FSM with one state per phase.</li>
+      <li>Each state loads a timer and stays in that state until the timer is up. State only updates on a divided slow clock enable, so the lights change slower for human clocks.</li>
+      <li>The FSM takes into account if a car is waiting on the road to decide which direction should open next.</li>
+    </ul></dd></div>
+    <div><dt>Result</dt><dd><ul>
+      <li>Self-checking testbench for different cases to ensure code is free of errors.</li>
+      <li>The system is visulaized in a GUI that shows which loghts are green, orange or red at any given time.</li>
+    </ul></dd></div>
+  </dl>
+ 
+  <h3>The design</h3>
+  <p class="prose">The controller is a Moore-style machine so every output (the two traffic lights and pedestrian signals) depends only on the current state. Each state also has a timer value that is counting down to indicate when a state transition takes place. The timer counts down on the slow clock enable.</p>
+  <p class="prose">After reset, the machine runs a <strong>startup sequence</strong> with both roads held at red while the pedestrian signals cycle white, orange and red. It then enters a clearance state. Once startup is done, traffic light green alternates between north-south road and east-west road. Each green phase is followed by a yellow phase and then a red stop phase, so the two directions take turns. Priority is given to the direction where a car is waiting.</p>
+ 
+  <h3>State outputs</h3>
+  <p class="prose">Car lights are red, yellow or green. Pedestrian signals are white, orange or amber. Timer values are in slow-clock ticks.</p>
+  <div class="tbl text"><table>
+    <thead><tr><th>State</th><th>Car NS</th><th>Car EW</th><th>Ped NS</th><th>Ped EW</th><th>Timer</th></tr></thead>
+    <tbody>
+      <tr><td>IDLE</td><td>Red</td><td>Red</td><td>Amber</td><td>Amber</td><td>0</td></tr>
+      <tr><td>GO_PS</td><td>Red</td><td>Red</td><td>White</td><td>White</td><td>5</td></tr>
+      <tr><td>SLOW_PS</td><td>Red</td><td>Red</td><td>Orange</td><td>Orange</td><td>3</td></tr>
+      <tr><td>CLEARANCE</td><td>Red</td><td>Red</td><td>Amber</td><td>Amber</td><td>2</td></tr>
+      <tr><td>GO_NS</td><td>Green</td><td>Red</td><td>Amber</td><td>White</td><td>10</td></tr>
+      <tr><td>SLOW_NS</td><td>Yellow</td><td>Red</td><td>Amber</td><td>Orange</td><td>3</td></tr>
+      <tr><td>STOP_NS</td><td>Red</td><td>Red</td><td>Amber</td><td>Amber</td><td>2</td></tr>
+      <tr><td>GO_EW</td><td>Red</td><td>Green</td><td>White</td><td>Amber</td><td>10</td></tr>
+      <tr><td>SLOW_EW</td><td>Red</td><td>Yellow</td><td>Orange</td><td>Amber</td><td>3</td></tr>
+      <tr><td>STOP_EW</td><td>Red</td><td>Red</td><td>Amber</td><td>Amber</td><td>2</td></tr>
+    </tbody>
+  </table></div>
+ 
+  <h3>State transitions</h3>
+  <div class="tbl text wide"><table>
+    <thead><tr><th>From</th><th>To</th><th>When</th></tr></thead>
+    <tbody>
+      <tr><td>IDLE</td><td>GO_PS</td><td>Immediately after reset</td></tr>
+      <tr><td>GO_PS</td><td>SLOW_PS</td><td>Timer expires</td></tr>
+      <tr><td>SLOW_PS</td><td>CLEARANCE</td><td>Timer expires</td></tr>
+      <tr><td>CLEARANCE</td><td>GO_NS or GO_EW</td><td>Timer expires. First time through, NS goes first. Afterward the car sensors decide, and when both or neither road has a car it alternates using the last direction served</td></tr>
+      <tr><td>GO_NS</td><td>SLOW_NS</td><td>Timer expires</td></tr>
+      <tr><td>SLOW_NS</td><td>STOP_NS</td><td>Timer expires</td></tr>
+      <tr><td>STOP_NS</td><td>GO_EW</td><td>Timer expires and reset is low</td></tr>
+      <tr><td>STOP_NS</td><td>IDLE</td><td>Timer expires and reset is high</td></tr>
+      <tr><td>GO_EW</td><td>SLOW_EW</td><td>Timer expires</td></tr>
+      <tr><td>SLOW_EW</td><td>STOP_EW</td><td>Timer expires</td></tr>
+      <tr><td>STOP_EW</td><td>GO_NS</td><td>Timer expires and reset is low</td></tr>
+      <tr><td>STOP_EW</td><td>IDLE</td><td>Timer expires and reset is high</td></tr>
+    </tbody>
+  </table></div>
+
+  <figure class="plot" style="max-width:860px"><img src="img/fsm-diagram.png" alt="Hand-drawn state diagram of the traffic light controller with transition conditions" loading="lazy"><figcaption>State diagram, drawn before writing the SystemVerilog</figcaption></figure>
+ 
+  <h3>Verification</h3>
+  <p class="prose">A self-checking testbench drives the clock, car sensors and reset, then compares the car and pedestrian outputs against the expected values for each state. It keeps two counters: how many checks have run and how many failed. In the capture below, the error counter stays at 0 while the check counter climbs 36 checks which was enough for this project.</p>
+  <p class="prose">The test plan covered startup, alternation, a single request, both and neither sensors, reset during north-south and during east-west, and timer limits</p>
+  <figure class="plot" style="max-width:860px"><img src="img/fsm-waveform.png" alt="Vivado waveform showing timer, car inputs, light outputs and the error and check counters" loading="lazy"><figcaption>Vivado behavioral simulation: errors stay at 0 as checks accumulate</figcaption></figure>
+ 
+  <h3>Visualization</h3>
+  <p class="prose">To see the controller behave like a real intersection, I used a GUI that shows the NS and EW lights, both pedestrian signals, the current timer value, and toggles for CAR NS, CAR EW and reset so we can see how the program responds to different conditions.</p>
+  <figure class="plot" style="max-width:520px"><img src="img/fsm-gui.png" alt="Traffic light simulation GUI" loading="lazy"><figcaption>Intersection GUI</figcaption></figure>
+</article>
+
+<article class="view detail" id="view-p-plant">
+  <a class="back" href="#projects">&larr; All projects</a>
+  <h2>Wireless Plant Watering System</h2>
+  <dl class="wwr">
+    <div><dt>What</dt><dd><p>Waters plants only when the soil needs it. Infrared communication links the sensing circuit to the watering circuit, so the two can sit apart without wiring.</p></dd></div>
+    <div><dt>How</dt><dd><ul>
+      <li>Two Arduino Nano nodes. A root-level moisture sensor with an experimentally calibrated threshold, adjustable by potentiometer and shown on an LCD.</li>
+      <li>Addressed infrared signals to a receiver that drives a servo-gated reservoir. Separate IR addresses validate that messages come from the sensor.</li>
+    </ul></dd></div>
+    <div><dt>Result</dt><dd><p>A smarter alternative to fixed timers and surface-level sensors, which overwater or misread moisture.</p></dd></div>
+  </dl>
+  <div class="gallery g2">
+    <figure><img src="img/plant-build.jpg" alt="Sensing node and watering node on breadboards" loading="lazy"><figcaption>Sensing node (1) and watering node (2)</figcaption></figure>
+    <figure><img src="img/plant-block.jpg" alt="Block diagram of the plant watering system" loading="lazy"><figcaption>Block diagram</figcaption></figure>
+  </div>
+</article>
+
+<article class="view detail" id="view-p-theremin">
+  <a class="back" href="#projects">&larr; All projects</a>
+  <h2>Optical Theremin</h2>
+  <dl class="wwr">
+    <div><dt>What</dt><dd><p>A contactless instrument. Pitch and volume follow the distance of a hand from a photocell.</p></dd></div>
+    <div><dt>How</dt><dd><p>Op-amp photocell circuits feed the Arduino ADC. A resistor-ladder DAC generates sine waves of different frequencies, and low-pass filters smooth the output.</p></dd></div>
+    <div><dt>Result</dt><dd><p>Smooth audio whose frequency and amplitude track hand position.</p></dd></div>
+  </dl>
+  <div class="gallery g1">
+    <figure><img src="img/theremin.jpg" alt="Theremin breadboards with oscilloscope probes" loading="lazy"><figcaption>Final circuit under test</figcaption></figure>
+  </div>
+</article>
+
+<article class="view detail" id="view-p-robot">
+  <a class="back" href="#projects">&larr; All projects</a>
+  <h2>Navigating Robot</h2>
+  <dl class="wwr">
+    <div><dt>What</dt><dd><p>An obstacle-avoiding robot built on ultrasonic sensors, servo motor control, and feedback loops.</p></dd></div>
+    <div><dt>How</dt><dd><p>Continuous-rotation servos and a power supply drive the wheels. Code lowers wheel speed as the distance to an object shrinks, and the sensor that sees the obstacle sets the turn direction.</p></dd></div>
+    <div><dt>Result</dt><dd><p>Reliable distance control from PID tuning.</p></dd></div>
+  </dl>
+  <div class="gallery g1">
+    <figure><img src="img/robot.jpg" alt="Robot chassis with Arduino and ultrasonic sensors" loading="lazy"><figcaption>Robot with ultrasonic sensors</figcaption></figure>
+  </div>
+</article>
+
+<!-- CONTACT -->
+<section class="view" id="view-contact">
+  <div class="contact">
+    <div class="label">Contact</div>
+    <h2 style="margin-top:12px">Reach Out!</h2>
+    <div class="mail" id="email">afza_ahsan@college.harvard.edu</div>
+    <div class="actions">
+      <button class="btn primary" id="copy" type="button">Copy email</button>
+      <a class="btn" href="https://www.linkedin.com/in/afzaahsan/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer><div class="wrap">Afza Ahsan · Electrical and Computer Engineering, Harvard College</div></footer>
+
+<script>
+(function(){
+  var views=document.querySelectorAll('.view'), tabs=document.querySelectorAll('.tabs a');
+  function route(){
+    var h=(location.hash||'#about').slice(1);
+    var id='view-'+h, el=document.getElementById(id);
+    if(!el){h='about';id='view-about';el=document.getElementById(id)}
+    views.forEach(function(v){v.classList.toggle('on',v===el)});
+    var tab=h.indexOf('p-')===0?'projects':h;
+    tabs.forEach(function(a){
+      if(a.getAttribute('data-tab')===tab){a.setAttribute('aria-current','page')}else{a.removeAttribute('aria-current')}
+    });
+    window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange',route);
+  route();
+
+  var btn=document.getElementById('copy'), em=document.getElementById('email');
+  btn.addEventListener('click',function(){
+    var t=em.textContent.trim();
+    function done(){btn.textContent='Copied';setTimeout(function(){btn.textContent='Copy email'},1600)}
+    function fallback(){
+      var r=document.createRange();r.selectNodeContents(em);
+      var s=window.getSelection();s.removeAllRanges();s.addRange(r);
+      btn.textContent='Selected, press copy';
+    }
+    try{
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,fallback)}
+      else{fallback()}
+    }catch(e){fallback()}
+  });
+})();
+</script>
+
+</html>
